@@ -11,11 +11,11 @@ import '@codingame/monaco-vscode-java-default-extension';
 import { MonacoEditorLanguageClientWrapper, type WrapperConfig } from 'monaco-editor-wrapper';
 import { LogLevel } from '@codingame/monaco-vscode-api';
 import { eclipseJdtLsConfig } from '../config.js';
-import helloJavaCode from '../../../resources/eclipse.jdt.ls/workspace/hello.java?raw';
+import helloJavaCode from '../../../resources/eclipse.jdt.ls/workspace/myProject/src/main/java/com/example/Hello.java?raw';
 import { configureMonacoWorkers } from '../../common/client/utils.js';
 
 export const runEclipseJdtLsClient = () => {
-    const helloJavaUri = vscode.Uri.file(`${eclipseJdtLsConfig.basePath}/workspace/hello.java`);
+    const helloJavaUri = vscode.Uri.file(`${eclipseJdtLsConfig.basePath}/workspace/myProject/src/main/java/com/example/Hello.java`);
     const fileSystemProvider = new RegisteredFileSystemProvider(false);
     fileSystemProvider.registerFile(new RegisteredMemoryFile(helloJavaUri, helloJavaCode));
     registerFileSystemOverlay(1, fileSystemProvider);
@@ -33,7 +33,10 @@ export const runEclipseJdtLsClient = () => {
                     'workbench.colorTheme': 'Default Dark Modern',
                     'editor.guides.bracketPairsHorizontal': 'active',
                     'editor.wordBasedSuggestions': 'off',
-                    'editor.experimental.asyncTokenization': true
+                    'editor.experimental.asyncTokenization': true,
+                    'java.project.referencedLibraries': [
+                        `${eclipseJdtLsConfig.basePath}/workspace/myProject/lib/commons-math3-3.6.1.jar`
+                    ]
                 })
             }
         },
@@ -41,7 +44,7 @@ export const runEclipseJdtLsClient = () => {
             codeResources: {
                 modified: {
                     text: helloJavaCode,
-                    uri: `${eclipseJdtLsConfig.basePath}/workspace/hello.java`
+                    uri: `${eclipseJdtLsConfig.basePath}/workspace/myProject/src/main/java/com/example/Hello.java`
                 }
             },
             monacoWorkerFactory: configureMonacoWorkers
@@ -58,8 +61,15 @@ export const runEclipseJdtLsClient = () => {
                     documentSelector: ['java'],
                     workspaceFolder: {
                         index: 0,
-                        name: 'workspace',
-                        uri: vscode.Uri.parse(`${eclipseJdtLsConfig.basePath}/workspace`)
+                        name: 'myProject',
+                        uri: vscode.Uri.parse(`${eclipseJdtLsConfig.basePath}/workspace/myProject`)
+                    }
+                },
+                initializationOptions: {
+                    settings: {
+                        'java.project.referencedLibraries': [
+                            `${eclipseJdtLsConfig.basePath}/workspace/myProject/lib/commons-math3-3.6.1.jar`
+                        ]
                     }
                 }
             }
