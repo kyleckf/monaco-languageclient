@@ -34,27 +34,39 @@ export const runEclipseJdtLsClient = () => {
                     'editor.guides.bracketPairsHorizontal': 'active',
                     'editor.wordBasedSuggestions': 'off',
                     'editor.experimental.asyncTokenization': true,
-                    'java.project.referencedLibraries': [
-                        `${eclipseJdtLsConfig.basePath}/workspace/myProject/lib/commons-math3-3.6.1.jar`
-                    ]
+                    'editor.folding': true,
+                    'editor.foldingStrategy': 'auto',
+                    'editor.showFoldingControls': 'always',
+                    'editor.minimap.enabled': false, // Hide minimap
+                    'editor.fontSize': 14,
+                    // 'editor.readOnly': true,
                 })
             }
         },
         editorAppConfig: {
             codeResources: {
+                // original: {
+                //     text: helloJavaCode,
+                //     uri: `${eclipseJdtLsConfig.basePath}/workspace/myProject/src/main/java/com/example/Hello.java`
+                // },
                 modified: {
                     text: helloJavaCode,
                     uri: `${eclipseJdtLsConfig.basePath}/workspace/myProject/src/main/java/com/example/Hello.java`
                 }
             },
-            monacoWorkerFactory: configureMonacoWorkers
+            monacoWorkerFactory: configureMonacoWorkers,
+            // This is the enable diff viewer
+            // useDiffEditor: true,
+            // diffEditorOptions: {
+            //     renderSideBySide: true
+            // }
         },
         languageClientConfigs: {
             java: {
                 connection: {
                     options: {
                         $type: 'WebSocketUrl',
-                        url: 'ws://localhost:30003/jdtls'
+                        url: 'ws://127.0.0.1:30003/jdtls'
                     }
                 },
                 clientOptions: {
@@ -63,14 +75,7 @@ export const runEclipseJdtLsClient = () => {
                         index: 0,
                         name: 'myProject',
                         uri: vscode.Uri.parse(`${eclipseJdtLsConfig.basePath}/workspace/myProject`)
-                    }
-                },
-                initializationOptions: {
-                    settings: {
-                        'java.project.referencedLibraries': [
-                            `${eclipseJdtLsConfig.basePath}/workspace/myProject/lib/commons-math3-3.6.1.jar`
-                        ]
-                    }
+                    },
                 }
             }
         }
@@ -86,6 +91,7 @@ export const runEclipseJdtLsClient = () => {
             await vscode.workspace.openTextDocument(helloJavaUri);
 
             await wrapper.start();
+
         });
         document.querySelector('#button-dispose')?.addEventListener('click', async () => {
             await wrapper.dispose();
