@@ -5,14 +5,21 @@
 
 import * as vscode from 'vscode';
 import getKeybindingsServiceOverride from '@codingame/monaco-vscode-keybindings-service-override';
-import { RegisteredFileSystemProvider, RegisteredMemoryFile, registerFileSystemOverlay } from '@codingame/monaco-vscode-files-service-override';
+import {
+    RegisteredFileSystemProvider,
+    RegisteredMemoryFile,
+    registerFileSystemOverlay
+} from '@codingame/monaco-vscode-files-service-override';
 // this is required syntax highlighting
 import '@codingame/monaco-vscode-java-default-extension';
-import { MonacoEditorLanguageClientWrapper, type WrapperConfig } from 'monaco-editor-wrapper';
-import { LogLevel } from '@codingame/monaco-vscode-api';
-import { eclipseJdtLsConfig } from '../config.js';
-import helloJavaCode from '../../../resources/eclipse.jdt.ls/workspace/myProject/src/main/java/com/example/Hello.java?raw';
-import { configureMonacoWorkers } from '../../common/client/utils.js';
+import {MonacoEditorLanguageClientWrapper, type WrapperConfig} from 'monaco-editor-wrapper';
+import {LogLevel} from '@codingame/monaco-vscode-api';
+import {eclipseJdtLsConfig} from '../config.js';
+import helloJavaCode
+    from '../../../resources/eclipse.jdt.ls/workspace/myProject/src/main/java/com/example/Hello.java?raw';
+import {configureMonacoWorkers} from '../../common/client/utils.js';
+import * as monaco from 'monaco-editor';
+import './styles.css';
 
 export const runEclipseJdtLsClient = () => {
     const helloJavaUri = vscode.Uri.file(`${eclipseJdtLsConfig.basePath}/workspace/myProject/src/main/java/com/example/Hello.java`);
@@ -47,7 +54,7 @@ export const runEclipseJdtLsClient = () => {
             codeResources: {
                 // original: {
                 //     text: helloJavaCode,
-                //     uri: `${eclipseJdtLsConfig.basePath}/workspace/myProject/src/main/java/com/example/Hello.java`
+                //     uri: `${eclipseJdtLsConfig.basePath}/workspace/hello.java`
                 // },
                 modified: {
                     text: helloJavaCode,
@@ -83,6 +90,13 @@ export const runEclipseJdtLsClient = () => {
 
     const wrapper = new MonacoEditorLanguageClientWrapper();
 
+    const hideLines = async (editor: monaco.editor.IStandaloneCodeEditor, startLine: number, endLine: number) => {
+        editor.setSelection(new monaco.Selection(startLine, 1, endLine, 1));
+
+        await editor.getAction('editor.createFoldingRangeFromSelection')?.run();
+    }
+
+
     try {
         document.querySelector('#button-start')?.addEventListener('click', async () => {
             await wrapper.init(wrapperConfig);
@@ -91,6 +105,16 @@ export const runEclipseJdtLsClient = () => {
             await vscode.workspace.openTextDocument(helloJavaUri);
 
             await wrapper.start();
+
+            const editor = wrapper.getEditor();
+            if (editor) {
+                setTimeout(async () => {
+                    // @ts-ignore
+                    await hideLines(editor, 1, 19);
+                    // @ts-ignore
+                    await hideLines(editor, 23, editor.getModel()?.getLineCount());
+                }, 100)
+            }
 
         });
         document.querySelector('#button-dispose')?.addEventListener('click', async () => {

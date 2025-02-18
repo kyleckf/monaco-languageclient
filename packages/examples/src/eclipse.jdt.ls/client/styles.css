@@ -1,0 +1,12 @@
+.my-code-block {
+    /*background-color: rgba(182, 33, 33, 0.9);*/
+    border-color: rgba(182, 33, 33, 0.9);
+}
+
+.my-code-block-left-line {
+    border-left: 3px solid #0e639c;
+}
+
+.my-code-block-glyph:before {
+    content: '✏️';  /* or use any other icon */
+}
